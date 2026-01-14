@@ -1,43 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Ajustes globais */
 :root{
   --roxo: #9966FF;
   --limao: #EBEB70;
-  --dark-bg: #1F2430; /* cinza escuro (não 100% preto) */
-  --light-bg: #FFFFFF;
-  --dark-panel: #121216;
-  --light-panel: #F4F4F4;
+  --bg: #F4F4F4;
+  --panel-bg: #FFFFFF;
+  --text: #111827;
 }
 
-html {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial;
+/* tema escuro (não 100% preto) */
+.dark {
+  --bg: #121212;
+  --panel-bg: #1e1e1e;
+  --text: #E6E6E6;
 }
 
-/* Tema claro */
-html.light {
-  background: var(--light-bg);
-  color: #111827;
+html, body, #__next {
+  height: 100%;
 }
 
-/* Tema escuro (classe .dark no html) */
-html.dark {
-  background: var(--dark-bg);
-  color: #e5e7eb;
-}
-
-/* Estilos base do app */
 body {
-  min-height: 100vh;
-}
-
-/* botões roxo */
-.btn-primary {
-  background: var(--roxo);
-  color: white;
-  border-radius: 6px;
-  padding: .6rem 1rem;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
