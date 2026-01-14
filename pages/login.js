@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { supabase } from "../lib/supabaseClient";
 
 export default function Login() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,11 +21,11 @@ export default function Login() {
 
     if (error) {
       setMessage("Erro ao fazer login");
-    } else {
-      setMessage("Login realizado com sucesso");
+      setLoading(false);
+      return;
     }
 
-    setLoading(false);
+    router.push("/dashboard");
   };
 
   return (
@@ -37,7 +40,7 @@ export default function Login() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ width: "300px" }}>
+      <div style={{ width: "320px" }}>
         <h1 style={{ color: "#9966FF", textAlign: "center" }}>
           Login
         </h1>
@@ -47,7 +50,13 @@ export default function Login() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ width: "100%", padding: "10px", marginTop: "10px" }}
+          style={{
+            width: "100%",
+            padding: "12px",
+            marginTop: "12px",
+            borderRadius: "4px",
+            border: "none",
+          }}
         />
 
         <input
@@ -55,7 +64,13 @@ export default function Login() {
           placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ width: "100%", padding: "10px", marginTop: "10px" }}
+          style={{
+            width: "100%",
+            padding: "12px",
+            marginTop: "12px",
+            borderRadius: "4px",
+            border: "none",
+          }}
         />
 
         <button
@@ -63,10 +78,13 @@ export default function Login() {
           disabled={loading}
           style={{
             width: "100%",
-            padding: "10px",
-            marginTop: "15px",
+            padding: "12px",
+            marginTop: "16px",
             background: "#9966FF",
+            color: "#000",
             border: "none",
+            borderRadius: "4px",
+            fontWeight: "bold",
             cursor: "pointer",
           }}
         >
@@ -74,7 +92,7 @@ export default function Login() {
         </button>
 
         {message && (
-          <p style={{ marginTop: "10px", textAlign: "center" }}>
+          <p style={{ marginTop: "12px", textAlign: "center" }}>
             {message}
           </p>
         )}
