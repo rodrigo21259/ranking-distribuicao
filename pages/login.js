@@ -25,7 +25,6 @@ export default function Login() {
       return;
     }
 
-    // 🔥 REDIRECT GARANTIDO
     router.replace("/dashboard");
   };
 
@@ -42,7 +41,13 @@ export default function Login() {
       }}
     >
       <div style={{ width: 320 }}>
-        <h1 style={{ color: "rgb(153,102,255)", textAlign: "center" }}>
+        <h1
+          style={{
+            color: "rgb(153,102,255)",
+            textAlign: "center",
+            marginBottom: 20,
+          }}
+        >
           Login
         </h1>
 
@@ -61,4 +66,40 @@ export default function Login() {
         />
 
         <input
-          type=
+          type="password"
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{
+            width: "100%",
+            padding: 10,
+            marginBottom: 10,
+            borderRadius: 4,
+            border: "none",
+          }}
+        />
+
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          style={{
+            width: "100%",
+            padding: 10,
+            backgroundColor: "rgb(153,102,255)",
+            color: "#000",
+            fontWeight: "bold",
+            border: "none",
+            borderRadius: 4,
+            cursor: "pointer",
+          }}
+        >
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
+
+        {message && (
+          <p style={{ marginTop: 10, textAlign: "center" }}>{message}</p>
+        )}
+      </div>
+    </div>
+  );
+}
