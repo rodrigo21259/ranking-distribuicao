@@ -1,97 +1,96 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabaseClient";
 
-export default function Dashboard() {
+export default function Login() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-      if (!session) {
-        router.push("/login");
-        return;
-      }
+  const handleLogin = async () => {
+    setLoading(true);
+    setMessage("");
 
-      setUser(session.user);
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setMessage("Erro ao fazer login");
       setLoading(false);
-    };
+      return;
+    }
 
-    checkUser();
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
+    // 🔥 REDIRECT GARANTIDO
+    router.push("/dashboard");
   };
-
-  if (loading) {
-    return (
-      <div style={styles.loading}>
-        Carregando...
-      </div>
-    );
-  }
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <h2>Dashboard</h2>
-        <button style={styles.logout} onClick={handleLogout}>
-          Sair
-        </button>
-      </header>
+      <h1 style={styles.title}>Login</h1>
 
-      <main style={styles.main}>
-        <p>Usuário logado:</p>
-        <strong>{user.email}</strong>
+      <input
+        style={styles.input}
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-        <div style={styles.card}>
-          Área pronta para métricas, rankings, gráficos etc.
-        </div>
-      </main>
+      <input
+        style={styles.input}
+        type="password"
+        placeholder="Senha"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      <button
+        style={styles.button}
+        onClick={handleLogin}
+        disabled={loading}
+      >
+        {loading ? "Entrando..." : "Entrar"}
+      </button>
+
+      {message && <p style={styles.error}>{message}</p>}
     </div>
   );
 }
 
 const styles = {
-  loading: {
-    minHeight: "100vh",
-    background: "#000",
-    color: "#fff",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   container: {
     minHeight: "100vh",
     background: "#000",
     color: "#fff",
-  },
-  header: {
-    padding: 20,
     display: "flex",
-    justifyContent: "space-between",
-    borderBottom: "1px solid #333",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  logout: {
+  title: {
+    color: "#9b6cff",
+    marginBottom: 20,
+  },
+  input: {
+    width: 300,
+    padding: 10,
+    marginBottom: 10,
+  },
+  button: {
+    width: 300,
+    padding: 10,
     background: "#9b6cff",
+    color: "#000",
     border: "none",
-    padding: "6px 12px",
     cursor: "pointer",
   },
-  main: {
-    padding: 20,
-  },
-  card: {
-    marginTop: 20,
-    padding: 20,
-    background: "#111",
-    border: "1px solid #333",
+  error: {
+    marginTop: 10,
+    color: "red",
   },
 };
