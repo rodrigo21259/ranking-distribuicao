@@ -1,62 +1,89 @@
-// components/ThemeToggle.js
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { getProfile, upsertProfile } from "../lib/profile";
 
-export default function ThemeToggle({ user }) {
-  const [theme, setTheme] = useState("dark");
-  const userId = user?.id;
+/**
+ * ThemeToggle:
+ * - alterna entre "light" e "dark"
+ * - aplica a classe "dark" no <html> (tailwind darkMode: 'class')
+ * - salva em localStorage para rápido apply
+ * - tenta salvar em user metadata no Supabase (se estiver logado)
+ */
+
+export default function ThemeToggle() {
+  const [theme, setTheme] = useState("dark"); // padrão dark
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const local = localStorage.getItem("theme");
-    if (!userId) {
-      const current = local || "dark";
-      setTheme(current);
-      document.documentElement.classList.toggle("dark", current === "dark");
+    // 1) preferencia local
+    const local = typeof window !== "undefined" && localStorage.getItem("theme");
+    if (local) {
+      setTheme(local);
+      applyTheme(local);
       return;
     }
-    // se user logado, pegar do profile
+
+    // 2) se usuário logado, tenta pegar do Supabase user metadata
     (async () => {
-      try {
-        const p = await getProfile(userId);
-        const current = p?.theme || local || "dark";
-        setTheme(current);
-        document.documentElement.classList.toggle("dark", current === "dark");
-        localStorage.setItem("theme", current);
-      } catch (err) {
-        console.error("getProfile error", err);
+      const user = supabase.auth.getUser ? (await supabase.auth.getUser()).data?.user : null;
+      // supabase v2: supabase.auth.getUser()
+      if (user && user.user_metadata && user.user_metadata.theme) {
+        const t = user.user_metadata.theme;
+        setTheme(t);
+        applyTheme(t);
+        localStorage.setItem("theme", t);
+      } else {
+        // fallback padrão: dark (ou altera aqui)
+        applyTheme("dark");
       }
     })();
-  }, [userId]);
+  }, []);
 
-  const toggle = async () => {
+  function applyTheme(t) {
+    if (typeof document === "undefined") return;
+    if (t === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }
+
+  async function toggle() {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
-    document.documentElement.classList.toggle("dark", next === "dark");
-    localStorage.setItem("theme", next);
+    applyTheme(next);
+    try {
+      localStorage.setItem("theme", next);
+    } catch (e) {}
 
-    if (userId) {
-      try {
-        await upsertProfile({ id: userId, email: user.email, theme: next });
-      } catch (err) {
-        console.error("Erro ao salvar tema:", err);
-      }
+    // salva no metadata do usuário (silencioso)
+    try {
+      setSaving(true);
+      // supabase v2: updateUser
+      const res = await supabase.auth.updateUser({
+        data: { theme: next },
+      });
+      // res.error ? console.log(res.error) : null;
+    } catch (err) {
+      // silent
+      console.log("não foi possível salvar tema no supabase", err?.message || err);
+    } finally {
+      setSaving(false);
     }
-  };
+  }
 
   return (
     <button
       onClick={toggle}
+      aria-label="Toggle theme"
       style={{
-        padding: "6px 10px",
+        background: theme === "dark" ? "#F4F4F4" : "#121212",
+        color: theme === "dark" ? "#121212" : "#FFFFFF",
         borderRadius: 6,
-        border: "1px solid rgba(255,255,255,0.08)",
-        background: theme === "dark" ? "#9966FF" : "#fff",
-        color: theme === "dark" ? "#fff" : "#111",
-        cursor: "pointer",
+        padding: "6px 10px",
+        fontWeight: 600,
       }}
     >
-      {theme === "dark" ? "Escuro" : "Claro"}
+      {theme === "dark" ? "Claro" : "Escuro"} {saving ? "…" : ""}
     </button>
   );
 }
