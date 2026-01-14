@@ -27,10 +27,10 @@ export default function Login() {
 
     setMessage("Login realizado com sucesso");
 
-    // 🔴 REDIRECT AQUI
+    // 🔴 REDIRECT AQUI (ESSENCIAL)
     setTimeout(() => {
-      router.push("/"); // depois você pode trocar para /dashboard
-    }, 500);
+      router.push("/"); // ou /dashboard no futuro
+    }, 800);
   };
 
   return (
@@ -39,56 +39,57 @@ export default function Login() {
         minHeight: "100vh",
         backgroundColor: "#000",
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
-        flexDirection: "column",
+        alignItems: "center",
       }}
     >
-      <h1 style={{ color: "#9966FF", marginBottom: 20 }}>Login</h1>
+      <div style={{ width: 320, textAlign: "center" }}>
+        <h1 style={{ color: "#9966FF", marginBottom: 20 }}>Login</h1>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={{
-          width: 300,
-          padding: 12,
-          marginBottom: 10,
-        }}
-      />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{
+            width: "100%",
+            padding: 10,
+            marginBottom: 10,
+          }}
+        />
 
-      <input
-        type="password"
-        placeholder="Senha"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        style={{
-          width: 300,
-          padding: 12,
-          marginBottom: 20,
-        }}
-      />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{
+            width: "100%",
+            padding: 10,
+            marginBottom: 15,
+          }}
+        />
 
-      <button
-        onClick={handleLogin}
-        disabled={loading}
-        style={{
-          width: 300,
-          padding: 12,
-          backgroundColor: "#9966FF",
-          color: "#000",
-          fontWeight: "bold",
-          cursor: "pointer",
-          border: "none",
-        }}
-      >
-        {loading ? "Entrando..." : "Entrar"}
-      </button>
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          style={{
+            width: "100%",
+            padding: 12,
+            backgroundColor: "#9966FF",
+            color: "#000",
+            fontWeight: "bold",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
 
-      {message && (
-        <p style={{ color: "#fff", marginTop: 15 }}>{message}</p>
-      )}
+        {message && (
+          <p style={{ color: "#fff", marginTop: 15 }}>{message}</p>
+        )}
+      </div>
     </div>
   );
 }
