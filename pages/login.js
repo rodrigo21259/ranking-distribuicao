@@ -1,105 +1,97 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabaseClient";
 
-export default function Login() {
+export default function Dashboard() {
   const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-  const handleLogin = async () => {
-    setLoading(true);
-    setMessage("");
+      if (!session) {
+        router.push("/login");
+        return;
+      }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setMessage("Erro ao fazer login");
+      setUser(session.user);
       setLoading(false);
-      return;
-    }
+    };
 
-    router.replace("/dashboard");
+    checkUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
   };
 
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#000",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#fff",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <div style={{ width: 320 }}>
-        <h1
-          style={{
-            color: "rgb(153,102,255)",
-            textAlign: "center",
-            marginBottom: 20,
-          }}
-        >
-          Login
-        </h1>
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            border: "none",
-          }}
-        />
-
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 10,
-            borderRadius: 4,
-            border: "none",
-          }}
-        />
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: 10,
-            backgroundColor: "rgb(153,102,255)",
-            color: "#000",
-            fontWeight: "bold",
-            border: "none",
-            borderRadius: 4,
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
-
-        {message && (
-          <p style={{ marginTop: 10, textAlign: "center" }}>{message}</p>
-        )}
+  if (loading) {
+    return (
+      <div style={styles.loading}>
+        Carregando...
       </div>
+    );
+  }
+
+  return (
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h2>Dashboard</h2>
+        <button style={styles.logout} onClick={handleLogout}>
+          Sair
+        </button>
+      </header>
+
+      <main style={styles.main}>
+        <p>Usuário logado:</p>
+        <strong>{user.email}</strong>
+
+        <div style={styles.card}>
+          Área pronta para métricas, rankings, gráficos etc.
+        </div>
+      </main>
     </div>
   );
 }
+
+const styles = {
+  loading: {
+    minHeight: "100vh",
+    background: "#000",
+    color: "#fff",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    minHeight: "100vh",
+    background: "#000",
+    color: "#fff",
+  },
+  header: {
+    padding: 20,
+    display: "flex",
+    justifyContent: "space-between",
+    borderBottom: "1px solid #333",
+  },
+  logout: {
+    background: "#9b6cff",
+    border: "none",
+    padding: "6px 12px",
+    cursor: "pointer",
+  },
+  main: {
+    padding: 20,
+  },
+  card: {
+    marginTop: 20,
+    padding: 20,
+    background: "#111",
+    border: "1px solid #333",
+  },
+};
