@@ -27,42 +27,68 @@ export default function Login() {
 
     setMessage("Login realizado com sucesso");
 
-    // 🔥 REDIRECT GARANTIDO
+    // 🔴 REDIRECT AQUI
     setTimeout(() => {
-      router.push("/dashboard");
+      router.push("/"); // depois você pode trocar para /dashboard
     }, 500);
   };
 
   return (
     <div
       style={{
-        background: "#000",
         minHeight: "100vh",
+        backgroundColor: "#000",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        flexDirection: "column",
       }}
     >
-      <div style={{ width: "320px", textAlign: "center" }}>
-        <h1 style={{ color: "#9966FF", marginBottom: "20px" }}>Login</h1>
+      <h1 style={{ color: "#9966FF", marginBottom: 20 }}>Login</h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "10px",
-            borderRadius: "4px",
-            border: "none",
-          }}
-        />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={{
+          width: 300,
+          padding: 12,
+          marginBottom: 10,
+        }}
+      />
 
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
+      <input
+        type="password"
+        placeholder="Senha"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{
+          width: 300,
+          padding: 12,
+          marginBottom: 20,
+        }}
+      />
+
+      <button
+        onClick={handleLogin}
+        disabled={loading}
+        style={{
+          width: 300,
+          padding: 12,
+          backgroundColor: "#9966FF",
+          color: "#000",
+          fontWeight: "bold",
+          cursor: "pointer",
+          border: "none",
+        }}
+      >
+        {loading ? "Entrando..." : "Entrar"}
+      </button>
+
+      {message && (
+        <p style={{ color: "#fff", marginTop: 15 }}>{message}</p>
+      )}
+    </div>
+  );
+}
