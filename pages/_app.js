@@ -1,36 +1,46 @@
 // pages/_app.js
-import { useEffect, useState, createContext } from "react";
 import "../styles/globals.css";
-import { createClient } from "@supabase/supabase-js"; // se você usar supabase aqui
-
-export const ThemeContext = createContext({
-  theme: "dark",
-  toggleTheme: () => {},
-});
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import ThemeToggle from "../components/ThemeToggle";
 
 function MyApp({ Component, pageProps }) {
-  const [theme, setTheme] = useState("dark");
+  const [user, setUser] = useState(null);
 
-  // Aplica a classe no html e lê localStorage ao iniciar
   useEffect(() => {
-    const saved = typeof window !== "undefined" && localStorage.getItem("theme");
-    const prefer = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light");
-    setTheme(prefer);
+    let mounted = true;
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!mounted) return;
+      setUser(data?.session?.user || null);
+    })();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      mounted = false;
+      sub?.subscription?.unsubscribe?.();
+    };
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
-
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <Component {...pageProps} />
-    </ThemeContext.Provider>
+    <div>
+      <header style={{ padding: 12, display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <h2 style={{ margin: 0, color: "var(--roxo)" }}>Ranking Distribuição</h2>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <ThemeToggle user={user} />
+          {user ? (
+            <button onClick={() => supabase.auth.signOut()}>Sair</button>
+          ) : null}
+        </div>
+      </header>
+
+      <main style={{ padding: 20 }}>
+        <Component {...pageProps} user={user} />
+      </main>
+    </div>
   );
 }
 
