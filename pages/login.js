@@ -25,12 +25,8 @@ export default function Login() {
       return;
     }
 
-    setMessage("Login realizado com sucesso");
-
-    // 🔴 REDIRECT AQUI (ESSENCIAL)
-    setTimeout(() => {
-      router.push("/"); // ou /dashboard no futuro
-    }, 800);
+    // 🔥 REDIRECT GARANTIDO
+    router.replace("/dashboard");
   };
 
   return (
@@ -39,12 +35,16 @@ export default function Login() {
         minHeight: "100vh",
         backgroundColor: "#000",
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
+        justifyContent: "center",
+        color: "#fff",
+        fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ width: 320, textAlign: "center" }}>
-        <h1 style={{ color: "#9966FF", marginBottom: 20 }}>Login</h1>
+      <div style={{ width: 320 }}>
+        <h1 style={{ color: "rgb(153,102,255)", textAlign: "center" }}>
+          Login
+        </h1>
 
         <input
           type="email"
@@ -55,41 +55,10 @@ export default function Login() {
             width: "100%",
             padding: 10,
             marginBottom: 10,
+            borderRadius: 4,
+            border: "none",
           }}
         />
 
         <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: 10,
-            marginBottom: 15,
-          }}
-        />
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: 12,
-            backgroundColor: "#9966FF",
-            color: "#000",
-            fontWeight: "bold",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
-
-        {message && (
-          <p style={{ color: "#fff", marginTop: 15 }}>{message}</p>
-        )}
-      </div>
-    </div>
-  );
-}
+          type=
