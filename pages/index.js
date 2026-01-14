@@ -1,29 +1,25 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { supabase } from "../lib/supabaseClient";
+
 export default function Home() {
-  return (
-    <div
-      style={{
-        backgroundColor: "#000000",
-        color: "#ffffff",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        fontFamily: "Arial, sans-serif"
-      }}
-    >
-      <h1 style={{ color: "#9966FF", marginBottom: "10px" }}>
-        Ranking Distribuição
-      </h1>
+  const router = useRouter();
 
-      <p style={{ color: "#EBEB70", fontSize: "18px" }}>
-        Sistema online com sucesso 🚀
-      </p>
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      <p style={{ marginTop: "20px", opacity: 0.7 }}>
-        Em breve: login, ranking e registro de ordens
-      </p>
-    </div>
-  );
+      if (session) {
+        router.replace("/dashboard");
+      } else {
+        router.replace("/login");
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
+  return null;
 }
-
