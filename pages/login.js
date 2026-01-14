@@ -25,7 +25,12 @@ export default function Login() {
       return;
     }
 
-    router.push("/dashboard");
+    setMessage("Login realizado com sucesso");
+
+    // 🔥 REDIRECT GARANTIDO
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 500);
   };
 
   return (
@@ -36,14 +41,10 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "#fff",
-        fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ width: "320px" }}>
-        <h1 style={{ color: "#9966FF", textAlign: "center" }}>
-          Login
-        </h1>
+      <div style={{ width: "320px", textAlign: "center" }}>
+        <h1 style={{ color: "#9966FF", marginBottom: "20px" }}>Login</h1>
 
         <input
           type="email"
@@ -52,8 +53,8 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)}
           style={{
             width: "100%",
-            padding: "12px",
-            marginTop: "12px",
+            padding: "10px",
+            marginBottom: "10px",
             borderRadius: "4px",
             border: "none",
           }}
@@ -65,38 +66,3 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "12px",
-            borderRadius: "4px",
-            border: "none",
-          }}
-        />
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "16px",
-            background: "#9966FF",
-            color: "#000",
-            border: "none",
-            borderRadius: "4px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
-
-        {message && (
-          <p style={{ marginTop: "12px", textAlign: "center" }}>
-            {message}
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
